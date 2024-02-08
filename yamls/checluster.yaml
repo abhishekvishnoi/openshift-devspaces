@@ -1,0 +1,43 @@
+apiVersion: org.eclipse.che/v2
+kind: CheCluster
+metadata:
+  name: devspaces
+  namespace: openshift-operators
+spec:
+  components:
+    cheServer:
+      debug: false
+      logLevel: INFO
+      extraProperties:
+        CHE_WORKSPACE_DEFAULT__CPU__LIMIT__CORES: '8'
+        CHE_WORKSPACE_DEFAULT__CPU__REQUEST__CORES: '4'
+        CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB: '8000'
+        CHE_WORKSPACE_DEFAULT__REQUEST__LIMIT__MB: '500'
+    metrics:
+      enable: true
+    pluginRegistry:
+      openVSXURL: 'https://open-vsx.org/'
+  containerRegistry: {}
+  devEnvironments:
+    startTimeoutSeconds: 300
+    secondsOfRunBeforeIdling: -1
+    maxNumberOfWorkspacesPerUser: -1
+    containerBuildConfiguration:
+      openShiftSecurityContextConstraint: container-build
+    defaultNamespace:
+      autoProvision: true
+      template: <username>-devspaces
+    secondsOfInactivityBeforeIdling: 1800
+    defaultComponents:
+      - container:
+          image: registry.redhat.io/devspaces/udi-rhel8@sha256:7e942155ebd808256e34a9411b85e41ae41d771353146cf6c15ed0b6bd4caacd
+          sourceMapping: /projects
+        name: universal-developer-image
+    storage:
+      perUserStrategyPvcConfig:
+        claimSize: 10Gi
+        perWorkspaceStrategyPvcConfig:
+          claimSize: 10Gi
+      pvcStrategy: per-user
+  gitServices: {}
+  networking: {}
